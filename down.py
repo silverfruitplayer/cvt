@@ -53,21 +53,21 @@ async def convert_and_send(client, message):
     if message.reply_to_message:
         if message.reply_to_message.text or message.reply_to_message.sticker or message.reply_to_message.animation:
             return await message.reply("**Wtf is this shit.**")
-
+        """
         if message.reply_to_message.video.file_name.endswith('.mp4'):
             await message.reply("**Bitch! Video already in mp4.**")
             return
+        """
 
         if message.reply_to_message.document.file_name.endswith('.mkv'):
+            x = await message.reply("**Downloading... Please note that larger file will require longer time to download.**")   
             mkv_path = await message.reply_to_message.download()
             #progress_bar = tqdm(total=os.path.getsize(mkv_path), unit="B", unit_scale=True)
-            x = await message.reply("**Downloading... Please note that larger file will require longer time to download.**")   
+            
             #print(progress_bar)      
             name, _ = os.path.splitext(mkv_path)
             mp4_path = name + ".mp4"
-            in_stream = ffmpeg.input(mkv_path)
-            out_stream = ffmpeg.output(in_stream, mp4_path)            
-            out_stream.run(overwrite_output=True)
+            ffmpeg.input(mkv_path).output(mp4_path, c="copy").run(overwrite_output=True)
             await x.edit("**Waiting for 10s to send video to avoid FloodWait**")
             await asyncio.sleep(10)
             await message.reply_video(mp4_path)  
