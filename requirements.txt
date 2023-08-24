@@ -1,0 +1,7 @@
+psutil
+pyrogram==1.4.2
+tgcrypto
+aiohttp
+beautifulsoup4
+requests
+yt_dlp
