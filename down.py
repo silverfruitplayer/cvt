@@ -7,6 +7,8 @@ import datetime
 from psutil import boot_time
 import asyncio
 import yt_dlp
+import re
+import subprocess
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 
 logging.basicConfig(
@@ -31,7 +33,7 @@ ydl_opts_aud = {
     # ℹ️ See help(yt_dlp.postprocessor) for a list of available Postprocessors and their arguments
     'postprocessors': [{  # Extract audio using ffmpeg
         'key': 'FFmpegExtractAudio',
-        'preferredcodec': 'm4a',
+        'preferredcodec': 'mp3',
     }]
 }
 
@@ -47,6 +49,46 @@ async def start(_, message):
     await replymsg.edit_text(f"Bot is alive!\nPingTime Taken: {end} seconds\nServer up since: {s_up}")
     return   
 
+
+@app.on_message(filters.command("ban"))
+async def start(_, message):
+    await message.reply_to_message.chat.ban_member(message.reply_to_message.from_user.id)
+    return 
+
+@app.on_message(filters.command("unban"))
+async def start(_, message):
+    await message.reply_to_message.chat.unban_member(message.reply_to_message.from_user.id)
+    return 
+
+@app.on_message(filters.command("purge"))
+async def purge(client, message):
+    app.set_parse_mode("markdown")
+    if message.chat.type not in (("supergroup", "channel")):
+        return
+
+    message_ids = []
+    count_del_etion_s = 0
+
+    if message.reply_to_message:
+        for a_s_message_id in range(
+            message.reply_to_message.message_id,
+            message.message_id
+        ):
+            message_ids.append(a_s_message_id)
+        if len(message_ids) > 0:
+            await client.delete_messages(
+                chat_id=message.chat.id,
+                message_ids=message_ids,
+                revoke=True
+            )
+            count_del_etion_s += len(message_ids)
+
+    status_message = await message.reply_text(
+        f"```Purged!```"
+    )
+    await asyncio.sleep(5)
+    await status_message.delete()
+    await message.reply_to_message.delete()
 
 @app.on_message(filters.command("convert") & ~filters.edited)
 async def convert_and_send(client, message):
@@ -125,7 +167,26 @@ async def process_vid_command(client, message):
             if message.chat.id in active_downloads:
                 del active_downloads[message.chat.id]
     else:
-        await message.reply_text("**Usage /aud <link>.**")
+        await message.reply_text("**Usage /aud <link>.**")  
+
+@app.on_message(filters.text)
+async def handle_message(client, message):
+    query = message.text
+    try:
+        x = await message.reply_text("Downloading...")
+
+        subprocess.run(['yt-dlp', '--extract-audio', '--audio-format', 'mp3', '-o', 'song.%(ext)s', f'ytsearch:{query}'], check=True)
+
+        await x.edit("Uploading...")
+
+        await client.send_audio(message.chat.id, audio="song.mp3", caption=query)
+        os.remove("song.mp3")
+        print("storage cleared")
+        await x.delete()
+
+    except subprocess.CalledProcessError:
+        await message.reply_text("Not looking good fam.")
+
 
 app.start()
 idle()
