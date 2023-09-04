@@ -16,10 +16,10 @@ logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     level=logging.INFO)
 
-app = Client("hhhhh",
+app = Client("down",
             api_id=6,
             api_hash="eb06d4abfb49dc3eeb1aeb98ae0f581e",
-            bot_token="6560962385:AAEUDNMrGJBTeZ2AReESVBEh8gCxthWGm8Y")
+            bot_token="6365720098:AAF3oFnfznps-ZrMTjvReLTFKQr5zBO49xE")
 
 # Set the path to the ffmpeg executable
 ffmpeg_path = '/path/to/ffmpeg'
@@ -54,11 +54,13 @@ async def start(_, message):
 @app.on_message(filters.command("ban"))
 async def start(_, message):
     await message.reply_to_message.chat.ban_member(message.reply_to_message.from_user.id)
+    await message.reply("banned")
     return 
 
 @app.on_message(filters.command("unban"))
 async def start(_, message):
     await message.reply_to_message.chat.unban_member(message.reply_to_message.from_user.id)
+    await message.reply("unbanned")
     return 
 
 @app.on_message(filters.command("purge"))
