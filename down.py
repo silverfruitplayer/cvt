@@ -11,7 +11,6 @@ import re
 import subprocess
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 
-subprocess.run(['sudo', 'apt', 'install', 'ffmpeg'])
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
