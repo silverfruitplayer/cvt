@@ -10,16 +10,12 @@ import yt_dlp
 import re
 import subprocess
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
-
+from apscheduler.schedulers.background import BackgroundScheduler
+import atexit
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     level=logging.INFO)
-
-app = Client("down",
-            api_id=6,
-            api_hash="eb06d4abfb49dc3eeb1aeb98ae0f581e",
-            bot_token="6365720098:AAF3oFnfznps-ZrMTjvReLTFKQr5zBO49xE")
 
 # Set the path to the ffmpeg executable
 ffmpeg_path = '/path/to/ffmpeg'
@@ -40,6 +36,20 @@ ydl_opts_aud = {
 
 active_downloads = {}
 
+app = Client("down",
+            api_id=6,
+            api_hash="eb06d4abfb49dc3eeb1aeb98ae0f581e",
+            bot_token="6365720098:AAF3oFnfznps-ZrMTjvReLTFKQr5zBO49xE")
+
+scheduler = BackgroundScheduler()
+
+def restart_bot():
+    print("Restarting the bot...")
+    app.stop()
+    app.start()
+
+scheduler.add_job(restart_bot, 'interval', hours=1)
+atexit.register(lambda: scheduler.shutdown())
 
 @app.on_message(filters.command("start"))
 async def start(_, message):
@@ -49,7 +59,6 @@ async def start(_, message):
     end = round(time() - start, 2)
     await replymsg.edit_text(f"Bot is alive!\nPingTime Taken: {end} seconds\nServer up since: {s_up}")
     return   
-
 
 @app.on_message(filters.command("ban"))
 async def start(_, message):
@@ -98,18 +107,10 @@ async def convert_and_send(client, message):
     if message.reply_to_message:
         if message.reply_to_message.text or message.reply_to_message.sticker or message.reply_to_message.animation:
             return await message.reply("**Wtf is this shit.**")
-        """
-        if message.reply_to_message.video.file_name.endswith('.mp4'):
-            await message.reply("**Bitch! Video already in mp4.**")
-            return
-        """
 
         if message.reply_to_message.document.file_name.endswith('.mkv'):
-            x = await message.reply("**Downloading... Please note that larger file will require longer time to download.**")   
+            x = await message.reply("**Downloading... Please note that a larger file will require more time to download.**")   
             mkv_path = await message.reply_to_message.download()
-            #progress_bar = tqdm(total=os.path.getsize(mkv_path), unit="B", unit_scale=True)
-            
-            #print(progress_bar)      
             name, _ = os.path.splitext(mkv_path)
             mp4_path = name + ".mp4"
             ffmpeg.input(mkv_path).output(mp4_path, c="copy").run(overwrite_output=True)
@@ -124,9 +125,8 @@ async def convert_and_send(client, message):
         else:
             await message.reply("**Wtf is this shit.**")    
     else:
-        await message.reply("**Reply to some video Dumbass !!.**")
+        await message.reply("**Reply to some video Dumbass!!**")
 
-        
 @app.on_message(filters.command("vid"))
 async def process_vid_command(client, message):
     if len(message.command) == 2:
@@ -144,7 +144,7 @@ async def process_vid_command(client, message):
                 os.remove(video_file)
                 print("Storage cleared.")
         except Exception as e:
-            await message.reply_text(f"Something happened and could not Download that.\n!!Error start!!\n\n{e}\n\n!!Error end!!")
+            await message.reply_text(f"Something happened and could not download that.\n!!Error start!!\n\n{e}\n\n!!Error end!!")
     else:
         await message.reply_text("**Usage: /vid <link>.**")
 
@@ -164,7 +164,7 @@ async def process_vid_command(client, message):
             os.remove(audio_file)
             print("storage cleared.")
         except Exception as e:
-            await message.reply_text("**Something Happened and was Unable to Download**")
+            await message.reply_text("**Something happened and was unable to download**")
             await message.reply_text(f"!!ERROR START!!\n\n`{e}`\n\n!!ERROR END!!**")
         finally:
             if message.chat.id in active_downloads:
@@ -190,6 +190,13 @@ async def handle_message(client, message):
     except subprocess.CalledProcessError:
         await message.reply_text("Not looking good fam.")
 
+if __name__ == "__main__":
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(restart_bot, 'interval', hours=1)
+    scheduler.start()
 
-app.start()
-idle()
+    try:
+        app.start()
+        idle()
+    except KeyboardInterrupt:
+        print("Bot stopped by the user.")
