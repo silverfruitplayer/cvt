@@ -6,3 +6,4 @@ beautifulsoup4
 requests
 yt_dlp
 ffmpeg-python
+apscheduler
