@@ -172,6 +172,22 @@ async def process_vid_command(client, message):
     else:
         await message.reply_text("**Usage /aud <link>.**")  
 
+@app.on_message(filters.command("down"))
+async def download_video(_, message):
+    if not message.reply_to_message:
+        await message.reply("Reply To A Video You Dumb Ass Shit!")
+        return
+    if not message.reply_to_message.media:
+        await message.reply("Mf that's not a video!")
+        return
+
+    m = await message.reply("Downloading Document.")
+    await message.reply_to_message.download()
+    mp4_file = "video.mp4"
+    await app.send_video(message.chat.id, mp4_file)
+    os.remove(mp4_file)
+
+
 @app.on_message(filters.text)
 async def handle_message(client, message):
     query = message.text
