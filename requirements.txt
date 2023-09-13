@@ -7,4 +7,4 @@ requests
 yt_dlp
 ffmpeg-python
 apscheduler
-heroku3
+heroku
