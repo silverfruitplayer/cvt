@@ -12,13 +12,9 @@ import subprocess
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from apscheduler.schedulers.background import BackgroundScheduler
 import atexit
-import heroku3
+from heroku import Heroku
 
 
-HEROKU_API_KEY = 'fbd84f1b-3b21-4a26-92a2-4692b8028bf5'
-
-# Heroku App Name
-HEROKU_APP_NAME = 'yes33'
 
 
 logging.basicConfig(
@@ -51,15 +47,18 @@ app = Client("down",
 
 scheduler = BackgroundScheduler()
 
-heroku_api = heroku3.from_key(HEROKU_API_KEY)
+HEROKU_API_KEY = 'fbd84f1b-3b21-4a26-92a2-4692b8028bf5'
 
-# Find your Heroku app by name
-app1 = heroku_api.apps().get_app(HEROKU_APP_NAME)
+
+heroku = Heroku(api_key=HEROKU_API_KEY)
+
+# Heroku App Name
+HEROKU_APP_NAME = 'yes33'
 
 def restart_bot():
-    print("Restarting the bot...")
-    app1.dynos().restart_all()
-    print("Dynos restarted!")
+    print("Restarting Dynos...")
+    app1 = heroku.apps()[HEROKU_APP_NAME]
+    app1.restart()
 
 scheduler.add_job(restart_bot, 'interval', seconds=10)
 atexit.register(lambda: scheduler.shutdown())
