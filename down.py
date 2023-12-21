@@ -12,7 +12,7 @@ import subprocess
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from apscheduler.schedulers.background import BackgroundScheduler
 import atexit
-from heroku import Heroku
+from heroku3 import Heroku
 
 
 
