@@ -13,9 +13,6 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQ
 from apscheduler.schedulers.background import BackgroundScheduler
 import atexit
 
-
-
-
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     level=logging.INFO)
@@ -42,26 +39,16 @@ active_downloads = {}
 app = Client("down",
             api_id=6,
             api_hash="eb06d4abfb49dc3eeb1aeb98ae0f581e",
-            bot_token="6365720098:AAG62bbQVJiTxE2zGnhRVq9JmV-wMOBsaeY")
+            bot_token="6365720098:AAF3oFnfznps-ZrMTjvReLTFKQr5zBO49xE")
 
 scheduler = BackgroundScheduler()
 
-#HEROKU_API_KEY = 'fbd84f1b-3b21-4a26-92a2-4692b8028bf5'
-
-
-#heroku = Heroku(api_key=HEROKU_API_KEY)
-
-# Heroku App Name
-#HEROKU_APP_NAME = 'yes33'
-
-"""
 def restart_bot():
-    print("Restarting Dynos...")
-    app1 = heroku.apps()[HEROKU_APP_NAME]
-    app1.restart()
-"""
+    print("Restarting the bot...")
+    app.stop()
+    app.start()
 
-scheduler.add_job(restart_bot, 'interval', seconds=10)
+scheduler.add_job(restart_bot, 'interval', hours=1)
 atexit.register(lambda: scheduler.shutdown())
 
 @app.on_message(filters.command("start"))
@@ -185,22 +172,6 @@ async def process_vid_command(client, message):
     else:
         await message.reply_text("**Usage /aud <link>.**")  
 
-@app.on_message(filters.command("down"))
-async def download_video(_, message):
-    if not message.reply_to_message:
-        await message.reply("Reply To A Video You Dumb Ass Shit!")
-        return
-    if not message.reply_to_message.media:
-        await message.reply("Mf that's not a video!")
-        return
-
-    m = await message.reply("Downloading Document.")
-    await message.reply_to_message.download()
-    mp4_file = "video.mp4"
-    await app.send_video(message.chat.id, mp4_file)
-    os.remove(mp4_file)
-
-
 @app.on_message(filters.text)
 async def handle_message(client, message):
     query = message.text
@@ -221,7 +192,7 @@ async def handle_message(client, message):
 
 if __name__ == "__main__":
     scheduler = BackgroundScheduler()
-    scheduler.add_job(restart_bot, 'interval', seconds=10)
+    scheduler.add_job(restart_bot, 'interval', hours=1)
     scheduler.start()
 
     try:
