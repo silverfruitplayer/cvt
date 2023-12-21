@@ -36,10 +36,10 @@ ydl_opts_aud = {
 
 active_downloads = {}
 
-app = Client("mdown2",
+app = Client("down",
             api_id=6,
             api_hash="eb06d4abfb49dc3eeb1aeb98ae0f581e",
-            bot_token="6365720098:AAG62bbQVJiTxE2zGnhRVq9JmV-wMOBsaeY")
+            bot_token="6365720098:AAHbRs2EyS38fj8o7UAefsJjKStSL214L-o")
 
 scheduler = BackgroundScheduler()
 
