@@ -9,7 +9,7 @@ import asyncio
 import yt_dlp
 import re
 import subprocess
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery, Message
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from apscheduler.schedulers.background import BackgroundScheduler
 import atexit
 
@@ -48,7 +48,7 @@ def restart_bot():
     app.stop()
     app.start()
 
-scheduler.add_job(restart_bot, 'interval', seconds=10)
+scheduler.add_job(restart_bot, 'interval', hours=1)
 atexit.register(lambda: scheduler.shutdown())
 
 @app.on_message(filters.command("start"))
@@ -192,16 +192,11 @@ async def handle_message(client, message):
 
 if __name__ == "__main__":
     scheduler = BackgroundScheduler()
-    scheduler.add_job(restart_bot, 'interval', seconds=10)
+    scheduler.add_job(restart_bot, 'interval', hours=1)
     scheduler.start()
 
-    while True:
-        try:
-            app.start()
-            idle()
-        
-        except KeyboardInterrupt:
-            print("Bot stopped by the user.")
-
-        except ConnectionError:
-            print("Raised exception: client was already connected.")    
+    try:
+        app.start()
+        idle()
+    except KeyboardInterrupt:
+        print("Bot stopped by the user.")
