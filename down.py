@@ -9,7 +9,7 @@ import asyncio
 import yt_dlp
 import re
 import subprocess
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery, Message
 from apscheduler.schedulers.background import BackgroundScheduler
 import atexit
 
@@ -36,7 +36,7 @@ ydl_opts_aud = {
 
 active_downloads = {}
 
-app = Client("down",
+app = Client("mdown2",
             api_id=6,
             api_hash="eb06d4abfb49dc3eeb1aeb98ae0f581e",
             bot_token="6365720098:AAG62bbQVJiTxE2zGnhRVq9JmV-wMOBsaeY")
@@ -48,7 +48,7 @@ def restart_bot():
     app.stop()
     app.start()
 
-scheduler.add_job(restart_bot, 'interval', hours=1)
+scheduler.add_job(restart_bot, 'interval', seconds=10)
 atexit.register(lambda: scheduler.shutdown())
 
 @app.on_message(filters.command("start"))
@@ -192,11 +192,16 @@ async def handle_message(client, message):
 
 if __name__ == "__main__":
     scheduler = BackgroundScheduler()
-    scheduler.add_job(restart_bot, 'interval', hours=1)
+    scheduler.add_job(restart_bot, 'interval', seconds=10)
     scheduler.start()
 
-    try:
-        app.start()
-        idle()
-    except KeyboardInterrupt:
-        print("Bot stopped by the user.")
+    while True:
+        try:
+            app.start()
+            idle()
+        
+        except KeyboardInterrupt:
+            print("Bot stopped by the user.")
+
+        except ConnectionError:
+            print("Raised exception: client was already connected.")    
