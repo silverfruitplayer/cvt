@@ -1,5 +1,5 @@
 psutil
-pyrogram==1.4.2
+pyrogram
 tgcrypto
 aiohttp
 beautifulsoup4
@@ -8,3 +8,4 @@ yt_dlp
 ffmpeg-python
 apscheduler
 heroku3
+uvloop
