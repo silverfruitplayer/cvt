@@ -2,6 +2,7 @@ import os
 from pyrogram import Client, filters, idle
 import ffmpeg
 import logging
+import uvloop
 from time import  time
 import datetime
 from psutil import boot_time
@@ -190,13 +191,14 @@ async def handle_message(client, message):
     except subprocess.CalledProcessError:
         await message.reply_text("Not looking good fam.")
 
-if __name__ == "__main__":
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(restart_bot, 'interval', hours=1)
-    scheduler.start()
+async def main():
+    # Set uvloop as the event loop policy
+    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
-    try:
-        app.start()
-        idle()
-    except KeyboardInterrupt:
-        print("Bot stopped by the user.")
+    # Start both app.start() and idle() concurrently
+    tasks = [app.start(), idle()]
+    await asyncio.gather(*tasks)
+
+if __name__ == "__main__":
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(main())
