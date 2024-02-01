@@ -173,9 +173,12 @@ async def process_vid_command(client, message):
     else:
         await message.reply_text("**Usage /aud <link>.**")  
 
-@app.on_message(filters.text)
+@app.on_message(filters.command("song"))
 async def handle_message(client, message):
-    query = message.text
+    if len(message.command) == 2:
+        query = message.command[1]
+    else:
+        return await message.reply_text("Please Write the song you want to download. Usage /song [song_name]")
     try:
         x = await message.reply_text("Downloading...")
 
