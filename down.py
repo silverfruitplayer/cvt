@@ -11,8 +11,8 @@ import yt_dlp
 import re
 import subprocess
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
-from apscheduler.schedulers.background import BackgroundScheduler
-import atexit
+#from apscheduler.schedulers.background import BackgroundScheduler
+#import atexit
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -42,15 +42,15 @@ app = Client("down",
             api_hash="eb06d4abfb49dc3eeb1aeb98ae0f581e",
             bot_token="6365720098:AAHbRs2EyS38fj8o7UAefsJjKStSL214L-o")
 
-scheduler = BackgroundScheduler()
+#scheduler = BackgroundScheduler()
 
 def restart_bot():
     print("Restarting the bot...")
     app.stop()
     app.start()
 
-scheduler.add_job(restart_bot, 'interval', hours=1)
-atexit.register(lambda: scheduler.shutdown())
+#scheduler.add_job(restart_bot, 'interval', hours=1)
+#atexit.register(lambda: scheduler.shutdown())
 
 @app.on_message(filters.command("start"))
 async def start(_, message):
@@ -103,7 +103,7 @@ async def purge(client, message):
     await status_message.delete()
     await message.reply_to_message.delete()
 
-@app.on_message(filters.command("convert") & ~filters.edited)
+@app.on_message(filters.command("convert"))
 async def convert_and_send(client, message):
     if message.reply_to_message:
         if message.reply_to_message.text or message.reply_to_message.sticker or message.reply_to_message.animation:
