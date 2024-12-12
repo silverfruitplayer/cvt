@@ -23,7 +23,7 @@ ffmpeg_path = '/path/to/ffmpeg'
 
 ydl_opts_vid = {
     'ffmpeg_location': ffmpeg_path,
-    'format': 'best[ext=mp4]/best',
+    'format': 'bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]/best[height<=1080][ext=mp4]',
 }
 
 ydl_opts_aud = {
@@ -145,7 +145,7 @@ async def process_vid_command(client, message):
                 os.remove(video_file)
                 print("Storage cleared.")
         except Exception as e:
-            await message.reply_text(f"Something happened and could not download that.\n!!Error start!!\n\n{e}\n\n!!Error end!!")
+            await message.reply_text(f"Something happened and could not download that Video.\n!!Error start!!\n\n`{e}`\n\n!!Error end!!")
     else:
         await message.reply_text("**Usage: /vid <link>.**")
 
